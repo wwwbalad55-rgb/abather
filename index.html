@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>برنامج الباسوورد - ذاري</title>
+    <style>
+        /* 🎨 تعريف الألوان */
+        :root {
+            --bg-color: #f4f6f9;
+            --container-bg: #ffffff;
+            --text-color: #333;
+            --input-bg: #f8f9fa;
+            --border-color: #ced4da;
+            --blue-btn: #2d7be4;
+            --purple-btn: #6f42c1;
+            --copy-btn: #28a745;
+            --footer-text: #777; /* لون الحقوق */
+        }
+
+        /* 🌙 الوضع الليلي */
+        body.dark-mode {
+            --bg-color: #121212;
+            --container-bg: #1e1e1e;
+            --text-color: #e0e0e0;
+            --input-bg: #2c2c2c;
+            --border-color: #444;
+            --blue-btn: #3b82f6;
+            --purple-btn: #8b5cf6;
+            --footer-text: #aaa;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            transition: 0.3s;
+        }
+
+        .container {
+            background-color: var(--container-bg);
+            padding: 40px 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            width: 400px;
+            text-align: center;
+            position: relative;
+        }
+
+        /* زر الوضع الليلي */
+        .theme-toggle {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text-color);
+        }
+
+        h3 {
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        /* الفواصل بين الأقسام */
+        .section {
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px dashed var(--border-color);
+        }
+        
+        /* 🏅 ستايل حقوق المطور (الجديد) */
+        .footer {
+            margin-top: 20px;
+            padding-top: 15px;
+            font-size: 13px;
+            color: var(--footer-text);
+            font-weight: bold;
+            border-top: 1px solid var(--border-color);
+            opacity: 0.8;
+        }
+
+        /* الحقول والأزرار */
+        .input-wrapper { position: relative; margin-bottom: 15px; }
+
+        input, select {
+            width: 100%;
+            padding: 12px 15px;
+            padding-left: 40px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            background-color: var(--input-bg);
+            color: var(--text-color);
+            font-size: 15px;
+            box-sizing: border-box;
+            outline: none;
+        }
+
+        .eye-icon {
+            position: absolute;
+            left: 15px; top: 50%; transform: translateY(-50%);
+            cursor: pointer; font-size: 1.1rem; color: #888;
+        }
+
+        .btn {
+            width: 100%; padding: 12px; border: none; border-radius: 8px;
+            color: white; font-size: 16px; font-weight: bold;
+            cursor: pointer; transition: opacity 0.2s; margin-bottom: 10px;
+        }
+        .btn:hover { opacity: 0.9; }
+
+        .btn-check { background-color: var(--blue-btn); }
+        .btn-generate { background-color: var(--purple-btn); }
+        .btn-copy { background-color: var(--copy-btn); margin-top: 5px;}
+
+        #strengthResult {
+            font-size: 14px; margin-top: 5px; font-weight: bold; height: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <button class="theme-toggle" id="themeBtn">🌙</button>
+
+        <div class="section">
+            <h3>🔍 فاحص قوة الباسوورد</h3>
+            <div class="input-wrapper"><input type="password" id="checkInput" placeholder="اكتب الباسوورد هنا">
+                <span class="eye-icon" id="eyeCheck">👁️</span>
+            </div>
+            <button class="btn btn-check" id="checkBtn">افحص النتيجة</button>
+            <div id="strengthResult"></div>
+        </div>
+
+        <div class="section">
+            <h3>🎲 صانع الباسوورد الذكي</h3>
+            <div class="input-wrapper">
+                <select id="lengthSelect">
+                    <option value="8">ضعيفة (8 أحرف)</option>
+                    <option value="12" selected>متوسطة (12 حرف منوع)</option>
+                    <option value="20">قوية جداً (20 حرف)</option>
+                </select>
+            </div>
+            <div class="input-wrapper">
+                <input type="text" id="genInput" placeholder="النتيجة تظهر هنا" readonly>
+            </div>
+            <button class="btn btn-generate" id="generateBtn">صنع باسوورد</button>
+            <button class="btn btn-copy" id="copyBtn">نسخ الباسوورد 📋</button>
+        </div>
+
+        <div class="footer">
+            Developed by Thari © 2025 <br>
+            تم التطوير بواسطة: ذاري
+        </div>
+    </div>
+
+    <script>
+        // العناصر
+        const themeBtn = document.getElementById('themeBtn');
+        const body = document.body;
+        const checkInput = document.getElementById('checkInput');
+        const eyeCheck = document.getElementById('eyeCheck');
+        const checkBtn = document.getElementById('checkBtn');
+        const strengthResult = document.getElementById('strengthResult');
+        const lengthSelect = document.getElementById('lengthSelect');
+        const genInput = document.getElementById('genInput');
+        const generateBtn = document.getElementById('generateBtn');
+        const copyBtn = document.getElementById('copyBtn');
+
+        // الوضع الليلي
+        themeBtn.addEventListener('click', () => {
+            body.classList.toggle('dark-mode');
+            themeBtn.textContent = body.classList.contains('dark-mode') ? '☀️' : '🌙';
+        });
+
+        // ميزة العين
+        eyeCheck.addEventListener('click', () => {
+            if (checkInput.type === 'password') {
+                checkInput.type = 'text';
+                eyeCheck.textContent = '🙈';
+            } else {
+                checkInput.type = 'password';
+                eyeCheck.textContent = '👁️';
+            }
+        });
+
+        // فحص الباسوورد
+        checkBtn.addEventListener('click', () => {
+            const val = checkInput.value;
+            if(val.length === 0) {
+                strengthResult.textContent = "اكتب شي أول! 😐";
+                strengthResult.style.color = "red";
+            } else if (val.length < 8) {
+                strengthResult.textContent = "ضعيفة جداً 🔴";
+                strengthResult.style.color = "red";
+            } else if (val.length < 12) {
+                strengthResult.textContent = "جيدة نوعاً ما 🟡";
+                strengthResult.style.color = "orange";
+            } else {
+                strengthResult.textContent = "قوية وممتازة 🟢";
+                strengthResult.style.color = "green";
+            }
+        });
+
+        // توليد الباسوورد
+        generateBtn.addEventListener('click', () => {
+            const length = parseInt(lengthSelect.value);
+            const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*";
+            let password = "";
+            for (let i = 0, n = charset.length; i < length; ++i) {
+                password += charset.charAt(Math.floor(Math.random() * n));
+            }
+            genInput.value = password;
+        });
+
+        // النسخ
+        copyBtn.addEventListener('click', () => {
+            if (!genInput.value) {
+                alert("ماكو باسوورد حتى تنسخه! 😅");
+                return;
+            }
+            genInput.select();
+            document.execCommand("copy");
+            
+            const originalText = copyBtn.textContent;
+            copyBtn.textContent = "تم النسخ بنجاح ✅";
+            setTimeout(() => { copyBtn.textContent = originalText; }, 2000);
+        });
+    </script>
+</body>
+</html>
