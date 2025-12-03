@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>أدوات الحماية الشاملة - abather hkmet</title>
+    <title>Security Tools - Thari</title>
     <style>
         /* 🎨 تعريف الألوان */
         :root {
@@ -14,7 +14,7 @@
             --border-color: #ced4da;
             --blue-btn: #2d7be4;
             --purple-btn: #6f42c1;
-            --orange-btn: #fd7e14; /* لون زر التشفير */
+            --orange-btn: #fd7e14;
             --copy-btn: #28a745;
             --footer-text: #777;
         }
@@ -41,7 +41,7 @@
             align-items: center;
             min-height: 100vh;
             margin: 0;
-            padding: 20px 0; /* مسافة بسيطة للموبايل */
+            padding: 20px 0;
             transition: 0.3s;
         }
 
@@ -55,17 +55,31 @@
             position: relative;
         }
 
-        /* زر الوضع الليلي */
-        .theme-toggle {
-            position: absolute;
-            top: 20px;
-            left: 20px;
-            background: none;
-            border: none;
-            font-size: 1.5rem;
-            cursor: pointer;
-            color: var(--text-color);
+        /* أزرار التحكم العلوية */
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
         }
+
+        .control-btn {
+            background: none;
+            border: 2px solid var(--border-color);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            cursor: pointer;
+            font-size: 1.2rem;
+            color: var(--text-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: 0.3s;
+        }
+        .control-btn:hover { background-color: var(--input-bg); }
+
+        /* تعديل الخط للنصوص الإنكليزية */
+        body[dir="ltr"] { font-family: 'Roboto', sans-serif; }
 
         h3 {
             margin-bottom: 15px;
@@ -76,7 +90,6 @@
             gap: 10px;
         }
 
-        /* الفواصل بين الأقسام */
         .section {
             margin-bottom: 30px;
             padding-bottom: 20px;
@@ -105,23 +118,26 @@
             font-size: 14px;
             box-sizing: border-box;
             outline: none;
-            font-family: monospace; /* عشان التشفير يبين زين */
+            font-family: monospace;
         }
-        
+
         /* تعديل خاص لحقل التشفير */
-        textarea {
-            resize: none;
-            height: 60px;
-        }
+        textarea { resize: none; height: 60px; }
 
         .eye-icon {
             position: absolute;
-            left: 15px; top: 50%; transform: translateY(-50%);
+            top: 50%; transform: translateY(-50%);
             cursor: pointer; font-size: 1.1rem; color: #888;
         }
+        
+        /* تعديل مكان العين حسب اللغة */
+        html[dir="rtl"] .eye-icon { left: 15px; }
+        html[dir="rtl"] input { padding-left: 40px; }
+        
+        html[dir="ltr"] .eye-icon { right: 15px; }
+        html[dir="ltr"] input { padding-right: 40px; }
 
-        .btn {
-            width: 100%; padding: 10px; border: none; border-radius: 8px;
+        .btn {width: 100%; padding: 10px; border: none; border-radius: 8px;
             color: white; font-size: 15px; font-weight: bold;
             cursor: pointer; transition: opacity 0.2s; margin-bottom: 10px;
         }
@@ -129,22 +145,24 @@
 
         .btn-check { background-color: var(--blue-btn); }
         .btn-generate { background-color: var(--purple-btn); }
-        .btn-encrypt { background-color: var(--orange-btn); } /* زر التشفير الجديد */
+        .btn-encrypt { background-color: var(--orange-btn); }
         .btn-copy { background-color: var(--copy-btn); font-size: 13px;}
 
-        #strengthResult {font-size: 14px; margin-top: 5px; font-weight: bold; height: 20px;
-        }
+        #strengthResult { font-size: 14px; margin-top: 5px; font-weight: bold; height: 20px; }
     </style>
 </head>
 <body>
 
     <div class="container">
-        <button class="theme-toggle" id="themeBtn">🌙</button>
+        <div class="controls">
+            <button class="control-btn" id="themeBtn">🌙</button>
+            <button class="control-btn" id="langBtn" style="font-size: 14px; font-weight: bold;">EN</button>
+        </div>
 
         <div class="section">
-            <h3>🔍 فاحص قوة الباسوورد</h3>
+            <h3 id="t_checkTitle">🔍 فاحص قوة الباسوورد</h3>
             <div class="input-wrapper">
-                <input type="password" id="checkInput" placeholder="اكتب الباسوورد هنا" style="padding-left: 40px;">
+                <input type="password" id="checkInput" placeholder="اكتب الباسوورد هنا">
                 <span class="eye-icon" id="eyeCheck">👁️</span>
             </div>
             <button class="btn btn-check" id="checkBtn">افحص النتيجة</button>
@@ -152,95 +170,173 @@
         </div>
 
         <div class="section">
-            <h3>🎲 صانع الباسوورد الذكي</h3>
+            <h3 id="t_genTitle">🎲 صانع الباسوورد الذكي</h3>
             <div class="input-wrapper">
                 <select id="lengthSelect">
-                    <option value="8">ضعيفة (8 أحرف)</option>
-                    <option value="12" selected>متوسطة (12 حرف منوع)</option>
-                    <option value="20">قوية جداً (20 حرف)</option>
+                    <option value="8" id="opt_weak">ضعيفة (8 أحرف)</option>
+                    <option value="12" id="opt_med" selected>متوسطة (12 حرف)</option>
+                    <option value="20" id="opt_strong">قوية جداً (20 حرف)</option>
                 </select>
             </div>
             <div class="input-wrapper">
-                <input type="text" id="genInput" placeholder="النتيجة تظهر هنا" readonly>
+                <input type="text" id="genInput" placeholder="..." readonly>
             </div>
             <button class="btn btn-generate" id="generateBtn">صنع باسوورد</button>
             <button class="btn btn-copy" id="copyGenBtn">نسخ الباسوورد 📋</button>
         </div>
 
         <div class="section">
-            <h3>🔐 تشفير النصوص (SHA-256)</h3>
+            <h3 id="t_encTitle">🔐 تشفير النصوص (SHA-256)</h3>
             <div class="input-wrapper">
-                <input type="text" id="encryptInput" placeholder="اكتب النص المراد تشفيره...">
+                <input type="text" id="encryptInput" placeholder="اكتب النص لتشفيره...">
             </div>
-            <div class="input-wrapper">
-                <textarea id="hashOutput" placeholder="النص المشفر سيظهر هنا..." readonly></textarea>
-            </div>
+            <textarea id="hashOutput" placeholder="..." readonly></textarea>
             <button class="btn btn-encrypt" id="encryptBtn">تشفير النص 🛡️</button>
             <button class="btn btn-copy" id="copyHashBtn">نسخ الكود المشفر 📋</button>
         </div>
 
-        <div class="footer">
-            Developed by abather hkmet © 2025 <br>
-            Security Tools Suite V3.0
+        <div class="footer" id="footerText">
+            Developed by Thari © 2025 <br> Security Tools Suite V4.0
         </div>
     </div>
 
     <script>
-        // === المتغيرات ===
+        // === قاموس اللغات ===
+        const translations = {
+            ar: {
+                checkTitle: "🔍 فاحص قوة الباسوورد",
+                checkPlace: "اكتب الباسوورد هنا",
+                checkBtn: "افحص النتيجة",
+                genTitle: "🎲 صانع الباسوورد الذكي",
+                genBtn: "صنع باسوورد",
+                copyBtn: "نسخ الباسوورد 📋",
+                encTitle: "🔐 تشفير النصوص (SHA-256)",
+                encPlace: "اكتب النص لتشفيره...",
+                encBtn: "تشفير النص 🛡️",
+                encCopy: "نسخ الكود المشفر 📋",
+                optWeak: "ضعيفة (8 أحرف)",
+                optMed: "متوسطة (12 حرف)",
+                optStrong: "قوية جداً (20 حرف)",
+                resultWait: "اكتب شي أول! 😐",
+                resultWeak: "ضعيفة جداً 🔴",
+                resultGood: "جيدة نوعاً ما 🟡",
+                resultStrong: "قوية وممتازة 🟢",
+                copied: "تم النسخ ✅",
+                footer: "تم التطوير بواسطة: ذاري © 2025"
+            },
+            en: {
+                checkTitle: "🔍 Password Strength Checker",
+                checkPlace: "Type password here",
+                checkBtn: "Check Strength",
+                genTitle: "🎲 Smart Password Generator",
+                genBtn: "Generate Password",
+                copyBtn: "Copy Password 📋",encTitle: "🔐 Text Encryption (SHA-256)",
+                encPlace: "Type text to encrypt...",
+                encBtn: "Encrypt Text 🛡️",
+                encCopy: "Copy Hash 📋",
+                optWeak: "Weak (8 chars)",
+                optMed: "Medium (12 chars)",
+                optStrong: "Very Strong (20 chars)",
+                resultWait: "Type something first! 😐",
+                resultWeak: "Too Weak 🔴",
+                resultGood: "Good Enough 🟡",
+                resultStrong: "Excellent & Strong 🟢",
+                copied: "Copied! ✅",
+                footer: "Developed by Thari © 2025"
+            }
+        };
+
+        let currentLang = 'ar'; // اللغة الافتراضية
+
+        // === تعريف العناصر ===
+        const langBtn = document.getElementById('langBtn');
         const themeBtn = document.getElementById('themeBtn');
-        const body = document.body;
         
-        // 1. الفحص
-        const checkInput = document.getElementById('checkInput');
-        const eyeCheck = document.getElementById('eyeCheck');
-        const checkBtn = document.getElementById('checkBtn');
-        const strengthResult = document.getElementById('strengthResult');
+        // النصوص التي ستتغير
+        const els = {
+            checkTitle: document.getElementById('t_checkTitle'),
+            checkInput: document.getElementById('checkInput'),
+            checkBtn: document.getElementById('checkBtn'),
+            genTitle: document.getElementById('t_genTitle'),
+            generateBtn: document.getElementById('generateBtn'),
+            copyGenBtn: document.getElementById('copyGenBtn'),
+            encTitle: document.getElementById('t_encTitle'),
+            encryptInput: document.getElementById('encryptInput'),
+            encryptBtn: document.getElementById('encryptBtn'),
+            copyHashBtn: document.getElementById('copyHashBtn'),
+            optWeak: document.getElementById('opt_weak'),
+            optMed: document.getElementById('opt_med'),
+            optStrong: document.getElementById('opt_strong'),
+            footer: document.getElementById('footerText')
+        };
 
-        // 2. التوليد
-        const lengthSelect = document.getElementById('lengthSelect');
-        const genInput = document.getElementById('genInput');
-        const generateBtn = document.getElementById('generateBtn');
-        const copyGenBtn = document.getElementById('copyGenBtn');
-
-        // 3. التشفير (الجديد)
-        const encryptInput = document.getElementById('encryptInput');
-        const hashOutput = document.getElementById('hashOutput');
-        const encryptBtn = document.getElementById('encryptBtn');
-        const copyHashBtn = document.getElementById('copyHashBtn');
-
-
-        // === الوظائف ===
-
-        // الوضع الليلي
-        themeBtn.addEventListener('click', () => {
-            body.classList.toggle('dark-mode');
-            themeBtn.textContent = body.classList.contains('dark-mode') ? '☀️' : '🌙';
+        // === تغيير اللغة ===
+        langBtn.addEventListener('click', () => {
+            currentLang = currentLang === 'ar' ? 'en' : 'ar';
+            updateLanguage();
         });
 
-        // 1. منطق الفحص
+        function updateLanguage() {
+            const t = translations[currentLang];
+            const isRTL = currentLang === 'ar';
+
+            // تغيير اتجاه الصفحة
+            document.documentElement.dir = isRTL ? 'rtl' : 'ltr';
+            langBtn.textContent = isRTL ? 'EN' : 'عربي';
+
+            // تحديث النصوص
+            els.checkTitle.textContent = t.checkTitle;
+            els.checkInput.placeholder = t.checkPlace;
+            els.checkBtn.textContent = t.checkBtn;
+            els.genTitle.textContent = t.genTitle;
+            els.generateBtn.textContent = t.genBtn;
+            els.copyGenBtn.textContent = t.copyBtn;
+            els.encTitle.textContent = t.encTitle;
+            els.encryptInput.placeholder = t.encPlace;
+            els.encryptBtn.textContent = t.encBtn;
+            els.copyHashBtn.textContent = t.encCopy;
+            els.optWeak.textContent = t.optWeak;
+            els.optMed.textContent = t.optMed;
+            els.optStrong.textContent = t.optStrong;
+            els.footer.innerHTML = t.footer + "<br> Security Tools Suite V4.0";
+        }
+
+        // === باقي الوظائف (نفس القديمة) ===
+        themeBtn.addEventListener('click', () => {
+            document.body.classList.toggle('dark-mode');
+            themeBtn.textContent = document.body.classList.contains('dark-mode') ? '☀️' : '🌙';
+        });
+
+        const checkInput = document.getElementById('checkInput');
+        const eyeCheck = document.getElementById('eyeCheck');
+        const strengthResult = document.getElementById('strengthResult');
+
         eyeCheck.addEventListener('click', () => {
             checkInput.type = checkInput.type === 'password' ? 'text' : 'password';
             eyeCheck.textContent = checkInput.type === 'password' ? '👁️' : '🙈';
         });
 
-        checkBtn.addEventListener('click', () => {
+        els.checkBtn.addEventListener('click', () => {
             const val = checkInput.value;
+            const t = translations[currentLang]; // نأخذ النص حسب اللغة الحالية
             if(val.length === 0) {
-                strengthResult.textContent = "اكتب شي أول! 😐";
+                strengthResult.textContent = t.resultWait;
+                strengthResult.style.color = "red";} else if (val.length < 8) {
+                strengthResult.textContent = t.resultWeak;
                 strengthResult.style.color = "red";
-            } else if (val.length < 8) {
-                strengthResult.textContent = "ضعيفة جداً 🔴";
-                strengthResult.style.color = "red";
-            } else if (val.length < 12) {strengthResult.textContent = "جيدة نوعاً ما 🟡";
+            } else if (val.length < 12) {
+                strengthResult.textContent = t.resultGood;
                 strengthResult.style.color = "orange";
             } else {
-                strengthResult.textContent = "قوية وممتازة 🟢";
+                strengthResult.textContent = t.resultStrong;
                 strengthResult.style.color = "green";
             }
         });
 
-        // 2. منطق التوليد
-        generateBtn.addEventListener('click', () => {
+        const lengthSelect = document.getElementById('lengthSelect');
+        const genInput = document.getElementById('genInput');
+
+        els.generateBtn.addEventListener('click', () => {
             const length = parseInt(lengthSelect.value);
             const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*";
             let password = "";
@@ -250,41 +346,33 @@
             genInput.value = password;
         });
 
-        copyGenBtn.addEventListener('click', () => copyToClipboard(genInput, copyGenBtn));
+        els.copyGenBtn.addEventListener('click', () => copyToClipboard(genInput, els.copyGenBtn));
 
-        // 3. منطق التشفير (SHA-256) 🔥
-        encryptBtn.addEventListener('click', async () => {
+        const encryptInput = document.getElementById('encryptInput');
+        const hashOutput = document.getElementById('hashOutput');
+
+        els.encryptBtn.addEventListener('click', async () => {
             const text = encryptInput.value;
-            if(!text) {
-                alert("اكتب نص لتشفيره!");
-                return;
-            }
-
-            // استخدام مكتبة المتصفح الأصلية للتشفير (SubtleCrypto)
+            if(!text) return;
             const msgBuffer = new TextEncoder().encode(text);
             const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
-            const hashArray = Array.from(new Uint8Array(hashBuffer));
-            const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-            
+            const hashHex = Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, '0')).join('');
             hashOutput.value = hashHex;
         });
 
-        copyHashBtn.addEventListener('click', () => copyToClipboard(hashOutput, copyHashBtn));
+        els.copyHashBtn.addEventListener('click', () => copyToClipboard(hashOutput, els.copyHashBtn));
 
-        // دالة مساعدة للنسخ
         function copyToClipboard(inputElement, btnElement) {
             if (!inputElement.value) return;
             inputElement.select();
-            inputElement.setSelectionRange(0, 99999); // للموبايل
+            inputElement.setSelectionRange(0, 99999);
             document.execCommand("copy");
             
             const originalText = btnElement.textContent;
-            btnElement.textContent = "تم النسخ ✅";
+            btnElement.textContent = translations[currentLang].copied;
             setTimeout(() => { btnElement.textContent = originalText; }, 2000);
         }
 
     </script>
 </body>
 </html>
-
-
